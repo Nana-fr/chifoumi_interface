@@ -20,35 +20,42 @@
 </head>
 
 <body>
+  
+  <header>
+    <h1 class="text-center py-3">Welcome to the Chi-fou-mi Game</h1>
+  </header>
+  
+  <main class="container text-center py-5">
 
-  <h1 class="text-center">Welcome to the Chi-fou-mi Game</h1>
-  <button onclick="launchGame()" class="startbtn btn btn-primary">Launch game</button>
+    <button onclick="launchGame()" class="startbtn btn btn-dark">Launch game</button>
 
-
-  <div class="d-none" id="game">
-  <h2><output id="console">Please enter your name:</output></h2>
-    <form class="row g-3" id="username">
-      <div class="input-group mb-3">
-        <input type="text" class="form-control" id="name" placeholder="Enter your name" aria-label="username" aria-describedby="button-addon2">
-        <button class="btn btn-outline-secondary" type="submit" id="submit">Enter</button>
-        <div class="invalid-feedback">
-          Your name should be between 2 and 20 letters long.
-        </div>
+    <div class="d-none" id="game">
+      <small id="scores" class="d-none fs-2 border border-dark p-2"></small>
+      
+      <h2><output id="console" class="mt-5">Please enter your name:</output></h2>
+      
+      <div id="form" class="d-none">
+        <form>
+          <div>
+            <input type="text" id="name" placeholder="Enter your name" aria-label="username" aria-describedby="button-addon2">
+          </div>
+          <div id="invalid" class="d-none">
+            Your name should be between 2 and 20 letters long.
+          </div>
+        </form>
+        <button class="btn btn-outline-dark my-2" type="submit" id="submit">Enter</button>
       </div>
-    </form>
-    <div class="d-none" id="choice">
-      <button class="choice" value="rock"><i class="far fa-hand-rock fa-5x"></i></button><button class="choice" value="paper"><i class="far fa-hand-paper fa-5x"></i></button><button class="choice" value="scissors"><i class="far fa-hand-scissors fa-5x"></i></button>
+      
+      <div class="d-none" id="choice">
+        <button class="choice mx-3" value="rock"><i class="far fa-hand-rock fa-5x"></i></button><button class="choice mx-3" value="paper"><i class="far fa-hand-paper fa-5x"></i></button><button class="choice mx-3" value="scissors"><i class="far fa-hand-scissors fa-5x"></i></button>
+      </div>
+      
+      <div class="d-none" id="replay">
+        <button class="replay mx-3 fs-5" value="yes">Yes<button class="replay mx-3 fs-5" value="no">No</button>
+      </div>
     </div>
-    <div class="d-none" id="replay">
-      <button class="replay" value="yes">Yes<button class="replay" value="no">No</button>
-    </div>
-  </div>
-  
 
-  
-
-  
-
+  </main>
 
 
   <!-- Add your site or application content here -->

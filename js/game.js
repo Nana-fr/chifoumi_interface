@@ -1,102 +1,115 @@
+// GLOBAL VARIABLES
 
 let start = document.getElementsByClassName("startbtn");
-function launchGame() {
-    start[0].classList.add("d-none");
-    document.getElementById("game").classList.remove("d-none");
-}
-
-// game
-
+let form = document.getElementById("form");
+let help = document.getElementById("invalid");
 let choices = {"rock" : ["scissors", "rock", "paper"], "paper" : ["rock", "paper", "scissors"], "scissors" : ["paper", "scissors", "rock"]};
+let scores = document.getElementById("scores");
 let userScore = 0;
 let computerScore = 0;
-let console = document.getElementById("console")
+let consoleGame = document.getElementById("console");
+let regex = /^[\p{Letter}\p{Script=Han}]{2,20}$/ui;
 
-while (userScore < 3 && computerScore < 3) {
+// FUNCTIONS
+
+    // ##### launch game 
+    function launchGame() {
+        start[0].classList.add("d-none");
+        document.getElementById("game").classList.remove("d-none");
+        askPlayerName();
+    }
 
     // ##### userName
-    let regex = /^[\p{Letter}\p{Script=Han}]{2,20}$/ui;
-    let userName = askPlayerName()
-
     function askPlayerName() { 
-        let name = document.getElementById("name").value;
+        form.classList.remove("d-none")
         document.getElementById("submit").addEventListener("click", function(event){
-            name = document.getElementById("name").value;
-            while (regex.test(name)===false || name === null) {
-                event.preventDefault();
-                event.stopPropagation();
-                name = document.getElementById("name").value;
+        let userName = document.getElementById("name").value;
+            if (regex.test(userName)=== false || userName === null) {
+                help.classList.remove("d-none");
+                askPlayerName();
+            } else {
+                help.classList.add("d-none");
+                askPlayerChoice(userScore, computerScore, userName); 
             }
-            document.getElementById("username").classList.add("d-none");
-            document.getElementById("choice").classList.remove("d-none");
-            console.innerText= `It's your turn to play ${name} choose one.`;
-            event.preventDefault();
-            event.stopPropagation();
-            return name;
         });
     };
 
-
     // ##### userchoice
-    let userChoice = askPlayerChoice();
-
-    function askPlayerChoice() {
+    function askPlayerChoice(userScore, computerScore, userName) {
+        form.classList.add("d-none");
+        scores.classList.remove("d-none");
+        scores.innerText = `${userName} : ${userScore}  |  Computer : ${computerScore}`;
+        document.getElementById("choice").classList.remove("d-none");
+        consoleGame.innerText= `It's your turn to play ${userName} choose one:`;
         let choices = document.getElementsByClassName("choice");
         for (var choice of choices) {
             choice.onclick = function() {
                 document.getElementById("choice").classList.add("d-none");
-                console.innerText = `You choose: ${this.value}`;
-                return this.value;
+                let userChoice = this.value;
+                consoleGame.innerText = `You choose: ${userChoice}`;
+                setTimeout(generateComputerChoice, 1000, userScore, computerScore, userName, userChoice);
             }
         }
     }
 
-    // #### computerchoice
-    let computerChoice = generateComputerChoice();
-    
-    function generateComputerChoice() {
-        return Object.keys(choices)[Math.floor(Math.random() * Object.keys(choices).length)];
+    // ##### computerchoice
+    function generateComputerChoice(userScore, computerScore, userName, userChoice) {
+        let computerChoice = Object.keys(choices)[Math.floor(Math.random() * Object.keys(choices).length)];
+        consoleGame.innerText = `Computer choose: ${computerChoice}`;
+        setTimeout(findWinner, 1000, userScore, computerScore, userName, userChoice, computerChoice);
     };
-    
-    console.innerText = `Computer choose: ${computerChoice}`;
 
-    // #### winner
-
-    computerChoice = choices[userChoice].indexOf(computerChoice); 
-    userChoice = choices[userChoice].indexOf(userChoice);
-
-    if (userChoice === computerChoice) {
-        console.innerText = `It's a draw.\n ${userName} : ${userScore}  |  Computer : ${computerScore}`;
-    } else if (userChoice > computerChoice) {
-        userScore++
-        console.innerText = `You win this round.\n ${userName} : ${userScore}  |  Computer : ${computerScore}`;
-    } else {
-        computerScore++
-        console.innerText = `Sorry you lost this round.\n ${userName} : ${userScore}  |  Computer : ${computerScore}`;
+    // ##### winner
+    function findWinner(userScore, computerScore, userName, userChoice, computerChoice) {
+        computerChoice = choices[userChoice].indexOf(computerChoice); 
+        userChoice = choices[userChoice].indexOf(userChoice);
+        if (userChoice === computerChoice) {
+            consoleGame.innerText = "It's a draw.";
+            scores.innerText = `${userName} : ${userScore}  |  Computer : ${computerScore}`;
+        } else if (userChoice > computerChoice) {
+            userScore++
+            consoleGame.innerText = "You win this round.";
+            scores.innerText = `${userName} : ${userScore}  |  Computer : ${computerScore}`;
+        } else {
+            computerScore++
+            consoleGame.innerText = "Sorry you lost this round.";
+            scores.innerText = `${userName} : ${userScore}  |  Computer : ${computerScore}`;
+        }
+        if (userScore < 3 && computerScore < 3) {
+            setTimeout(askPlayerChoice, 1000, userScore, computerScore, userName);
+        } else {
+            setTimeout(endGame, 1000, userScore, computerScore, userName);
+        }
     }
 
-
-    // ### final winner
-    function replay() {
+    // ##### final winner
+    function endGame(userScore, computerScore, userName) {
+        if (userScore < computerScore){
+            consoleGame.innerText = "GAME OVER";
+            setTimeout(replay, 1000, userName);
+        } else {
+            consoleGame.innerText = "Congratulations you are the QUEEN/KING of Chi-Fou-Mi";
+            setTimeout(replay, 1000, userName);
+        }
+    }
+   
+    // ##### replay
+    function replay(userName) {
+        scores.classList.add("d-none");
         document.getElementById("replay").classList.remove("d-none");
-        console.innerText = "Do you want to play again?"
+        consoleGame.innerText = "Do you want to play again?";
         let answers = document.getElementsByClassName("replay");
         for (var answer of answers) {
             answer.onclick = function() {
-                return this.value;
+                document.getElementById("replay").classList.add("d-none");
+                this.value === "yes"? askPlayerChoice(userScore = 0, computerScore = 0, userName) : (consoleGame.innerText = "Thanks for this game, see you soon.", setTimeout(resetGame, 1000));
             }
         }
-        answer === "yes"? (userScore = 0, computerScore = 0) : console.innerText = "Thanks for this game, see you soon.";
     }
 
-    if (userScore === 3 || computerScore === 3) {
-        if (userScore < computerScore){
-            console.innerText = "GAME OVER";
-            replay();
-        } else {
-            console.innerText = "Congratulations you are the QUEEN/KING of Chi-Fou-Mi";
-            replay();
-        }
+    // ##### reset game
+    function resetGame() {
+        document.getElementById("game").classList.add("d-none");
+        start[0].classList.remove("d-none");
+        consoleGame.innerText = "Please enter your name:";
     }
-}
-
